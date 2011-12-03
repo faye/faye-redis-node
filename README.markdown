@@ -1,7 +1,7 @@
 # faye-redis
 
-This package provides a Redis-based backend for the (Faye)[http://faye.jcoglan.com]
-pub/sub server for (Node)[http://nodejs.org]. It lets you run a single Faye
+This package provides a Redis-based backend for the [Faye](http://faye.jcoglan.com)
+pub/sub server for [Node](http://nodejs.org). It lets you run a single Faye
 service distributed across multiple web servers.
 
 
@@ -21,9 +21,9 @@ var bayeux = new faye.NodeAdapter({
   mount:    '/faye',
   timeout:  45,
   engine: {
-    type:       redis,
-    host:       'REDIS_HOST',   // default is 'localhost'
-    port:       'REDIS_PORT'    // default is 6379
+    type: redis,
+    host: 'REDIS_HOST',   // default is 'localhost'
+    port: 'REDIS_PORT'    // default is 6379
   }
 });
 
@@ -34,10 +34,10 @@ server.listen(8000);
 As well as the `host` and `port` options, the engine supports the following
 optional settings:
 
-* **`socket`** - Path to a Unix socket if you'd rather connect that way
-* **`password`** - Required if your Redis server requires a password
-* **`database`** - Number, selects which Redis DB to use
-* **`namespace`** - String, prefixed to all keys if specified
+* `socket` - Path to a Unix socket if you'd rather connect that way
+* `password` - Required if your Redis server requires a password
+* `database` - Number, selects which Redis DB to use
+* `namespace` - String, prefixed to all keys if specified
 
 
 ## License
