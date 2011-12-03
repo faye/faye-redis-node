@@ -4,7 +4,18 @@ JS.ENV.RedisEngineSpec = JS.Test.describe("Redis engine", function() { with(this
   before(function() {
     this.engineOpts = {type: RedisEngine, password: "foobared", namespace: new Date().getTime().toString()}
   })
-  after(function() { this.clean_redis_db() })
+  
+  after(function(resume) { with(this) {
+    sync(function() {
+      engine.disconnect()
+      var redis = require('redis').createClient(6379, 'localhost', {no_ready_check: true})
+      redis.auth(engineOpts.password)
+      redis.flushall(function() {
+        redis.end()
+        resume()
+      })
+    })
+  }})
   
   itShouldBehaveLike("faye engine")
   
