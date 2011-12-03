@@ -2,6 +2,7 @@
 .gitignore
 .gitmodules
 .redcar
+Rakefile
 node_modules
 spec
 vendor
