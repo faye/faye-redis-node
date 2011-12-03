@@ -1,0 +1,7 @@
+.git
+.gitignore
+.gitmodules
+.redcar
+node_modules
+spec
+vendor
