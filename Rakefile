@@ -6,9 +6,6 @@ task :prepare do
     `npm install`
     `jake`
   end
-  FileUtils.cd 'vendor/js.class' do
-    `jake`
-  end
   `npm install`
 end
 

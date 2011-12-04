@@ -1,5 +1,4 @@
-JSCLASS_PATH = 'vendor/js.class/build/src'
-require('../' + JSCLASS_PATH + '/loader')
+require('jsclass')
 JS.require('JS.Range', 'JS.Test')
 
 require('../vendor/faye/build/faye-node')
