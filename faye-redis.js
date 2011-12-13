@@ -56,9 +56,9 @@ Engine.prototype = {
   
   createClient: function(callback, scope) {
     var clientId = this._server.generateId(), self = this;
-    this._server.debug('Created new client ?', clientId);
     this._redis.zadd(this._ns + '/clients', 0, clientId, function(error, added) {
       if (added === 0) return self.createClient(callback, scope);
+      self._server.debug('Created new client ?', clientId);
       self.ping(clientId);
       self._server.trigger('handshake', clientId);
       callback.call(scope, clientId);
@@ -73,6 +73,7 @@ Engine.prototype = {
     this._redis.smembers(this._ns + '/clients/' + clientId + '/channels', function(error, channels) {
       var n = channels.length, i = 0;
       if (n === 0) {
+        self._server.debug('Destroyed client ?', clientId);
         self._server.trigger('disconnect', clientId);
         if (callback) callback.call(scope);
         return;
