@@ -1,6 +1,6 @@
 { "name"            : "faye-redis"
 , "description"     : "Redis backend engine for Faye"
-, "homepage"        : "http://github.com/jcoglan/faye-redis-node"
+, "homepage"        : "http://github.com/faye/faye-redis-node"
 , "author"          : "James Coglan <jcoglan@gmail.com> (http://jcoglan.com/)"
 , "keywords"        : ["pubsub", "bayeux"]
 
@@ -10,7 +10,7 @@
 , "dependencies"    : {"hiredis": "", "redis": ""}
 , "devDependencies" : {"jsclass": ""}
 
-, "bugs"            : "http://github.com/jcoglan/faye-redis-node/issues"
+, "bugs"            : "http://github.com/faye/faye-redis-node/issues"
 
 , "licenses"        : [ { "type"    : "MIT"
                         , "url"     : "http://www.opensource.org/licenses/mit-license.php"
@@ -18,7 +18,7 @@
                       ]
 
 , "repositories"    : [ { "type"    : "git"
-                        , "url"     : "git://github.com/jcoglan/faye-redis-node.git"
+                        , "url"     : "git://github.com/faye/faye-redis-node.git"
                         }
                       ]
 }
