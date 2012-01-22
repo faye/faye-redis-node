@@ -6,7 +6,7 @@ front-end web servers by storing state and routing messages through a
 [Redis](http://redis.io) database server.
 
 
-== Usage
+## Usage
 
 Pass in the engine and any settings you need when setting up your Faye server.
 
@@ -34,14 +34,14 @@ server.listen(8000);
 The full list of settings is as follows.
 
 * <b><tt>host</tt></b> - hostname of your Redis instance
-* <b><tt>port</tt></b> - port number, default is +6379+
-* <b><tt>password</tt></b> - password, if +requirepass+ is set
-* <b><tt>database</tt></b> - number of database to use, default is +0+
-* <b><tt>namespace</tt></b> - prefix applied to all keys, default is <tt>''</tt>
-* <b><tt>socket</tt></b> - path to Unix socket if +unixsocket+ is set
+* <b><tt>port</tt></b> - port number, default is `6379`
+* <b><tt>password</tt></b> - password, if `requirepass` is set
+* <b><tt>database</tt></b> - number of database to use, default is `0`
+* <b><tt>namespace</tt></b> - prefix applied to all keys, default is `''`
+* <b><tt>socket</tt></b> - path to Unix socket if `unixsocket` is set
 
 
-== License
+## License
 
 (The MIT License)
 
