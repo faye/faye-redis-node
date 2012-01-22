@@ -72,24 +72,21 @@ Engine.prototype = {
     
     this._redis.smembers(this._ns + '/clients/' + clientId + '/channels', function(error, channels) {
       var n = channels.length, i = 0;
-      if (n === 0) {
-        self._server.debug('Destroyed client ?', clientId);
-        self._server.trigger('disconnect', clientId);
-        if (callback) callback.call(scope);
-        return;
-      }
-            
+      if (i === n) return self.afterDestroy(clientId, callback, scope);
+      
       channels.forEach(function(channel) {
         self.unsubscribe(clientId, channel, function() {
           i += 1;
-          if (i === n) {
-            self._server.debug('Destroyed client ?', clientId);
-            self._server.trigger('disconnect', clientId);
-            if (callback) callback.call(scope);
-          }
+          if (i === n) self.afterDestroy(clientId, callback, scope);
         });
       });
     });
+  },
+  
+  afterDestroy: function(clientId, callback, scope) {
+    this._server.debug('Destroyed client ?', clientId);
+    this._server.trigger('disconnect', clientId);
+    if (callback) callback.call(scope);
   },
   
   clientExists: function(clientId, callback, scope) {
@@ -156,6 +153,7 @@ Engine.prototype = {
     var key   = this._ns + '/clients/' + clientId + '/messages',
         multi = this._redis.multi(),
         self  = this;
+    
     multi.lrange(key, 0, -1, function(error, jsonMessages) {
       var messages = jsonMessages.map(function(json) { return JSON.parse(json) });
       self._server.deliver(clientId, messages);
