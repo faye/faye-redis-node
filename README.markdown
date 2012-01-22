@@ -1,14 +1,14 @@
 # faye-redis
 
-This package provides a Redis-based backend for the [Faye](http://faye.jcoglan.com)
-pub/sub server for [Node](http://nodejs.org). It lets you run a single Faye
-service distributed across multiple web servers.
+This plugin provides a Redis-based backend for the [Faye](http://faye.jcoglan.com)
+messaging server. It allows a single Faye service to be distributed across many
+front-end web servers by storing state and routing messages through a
+[Redis](http://redis.io) database server.
 
 
-## Usage
+== Usage
 
-You can make Faye use this engine by passing the constructor along with some
-configuration options.
+Pass in the engine and any settings you need when setting up your Faye server.
 
 ```js
 var faye  = require('faye'),
@@ -18,12 +18,12 @@ var faye  = require('faye'),
 var server = http.createServer();
 
 var bayeux = new faye.NodeAdapter({
-  mount:    '/faye',
-  timeout:  45,
+  mount:    '/',
+  timeout:  25,
   engine: {
-    type: redis,
-    host: 'REDIS_HOST',   // default is 'localhost'
-    port: 'REDIS_PORT'    // default is 6379
+    type:   redis,
+    host:   'redis.example.com',
+    // more options
   }
 });
 
@@ -31,20 +31,21 @@ bayeux.attach(server);
 server.listen(8000);
 ```
 
-As well as the `host` and `port` options, the engine supports the following
-optional settings:
+The full list of settings is as follows.
 
-* `socket` - Path to a Unix socket if you'd rather connect that way
-* `password` - Required if your Redis server requires a password
-* `database` - Number, selects which Redis DB to use
-* `namespace` - String, prefixed to all keys if specified
+* <b><tt>host</tt></b> - hostname of your Redis instance
+* <b><tt>port</tt></b> - port number, default is +6379+
+* <b><tt>password</tt></b> - password, if +requirepass+ is set
+* <b><tt>database</tt></b> - number of database to use, default is +0+
+* <b><tt>namespace</tt></b> - prefix applied to all keys, default is <tt>''</tt>
+* <b><tt>socket</tt></b> - path to Unix socket if +unixsocket+ is set
 
 
-## License
+== License
 
 (The MIT License)
 
-Copyright (c) 2009-2011 James Coglan
+Copyright (c) 2011-2012 James Coglan
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the 'Software'), to deal in
@@ -62,3 +63,4 @@ FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
 COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
 IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
