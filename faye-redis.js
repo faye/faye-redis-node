@@ -41,7 +41,7 @@ Engine.create = function(server, options) {
 };
 
 Engine.prototype = {
-  DEFAULT_HOST:     'localhost',
+  DEFAULT_HOST:     '127.0.0.1',
   DEFAULT_PORT:     6379,
   DEFAULT_DATABASE: 0,
   DEFAULT_GC:       60,
