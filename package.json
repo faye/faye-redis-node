@@ -10,6 +10,8 @@
 , "dependencies"    : {"hiredis": "", "redis": ""}
 , "devDependencies" : {"jsclass": ""}
 
+, "scripts"         : {"test": "node spec/runner.js"}
+
 , "bugs"            : "http://github.com/faye/faye-redis-node/issues"
 
 , "licenses"        : [ { "type"    : "MIT"
