@@ -1,8 +1,10 @@
 .git
 .gitignore
 .gitmodules
+.npmignore
 .redcar
 .travis.yml
+dump.rdb
 Rakefile
 node_modules
 spec
