@@ -1,6 +1,6 @@
 var RedisEngine = require('../faye-redis')
 
-JS.ENV.RedisEngineSpec = JS.Test.describe("Redis engine", function() { with(this) {
+JS.ENV.FayeRedisSpec = JS.Test.describe("Redis engine", function() { with(this) {
   before(function() {
     this.engineOpts = {type: RedisEngine, password: "foobared", namespace: new Date().getTime().toString()}
   })
