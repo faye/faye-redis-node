@@ -23,6 +23,8 @@ JS.ENV.FayeRedisSpec = JS.Test.describe("Redis engine", function() { with(this) 
     itShouldBehaveLike("distributed engine")
   }})
   
+  if (process.env.TRAVIS) return
+  
   describe("using a Unix socket", function() { with(this) {
     before(function() { with(this) {
       this.engineOpts.socket = "/tmp/redis.sock"
