@@ -2,7 +2,8 @@ var RedisEngine = require('../faye-redis')
 
 JS.ENV.FayeRedisSpec = JS.Test.describe("Redis engine", function() { with(this) {
   before(function() {
-    this.engineOpts = {type: RedisEngine, password: "foobared", namespace: new Date().getTime().toString()}
+    var pw = process.env.TRAVIS ? undefined : "foobared"
+    this.engineOpts = {type: RedisEngine, password: pw, namespace: new Date().getTime().toString()}
   })
   
   after(function(resume) { with(this) {
