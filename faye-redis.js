@@ -187,7 +187,7 @@ Engine.prototype = {
   _withLock: function(lockName, callback, scope) {
     var lockKey     = this._ns + '/locks/' + lockName,
         currentTime = new Date().getTime(),
-        expiry      = currentTime + this.LOCK_TIMEOUT * 1000 + 1;
+        expiry      = currentTime + this.LOCK_TIMEOUT * 1000 + 1,
         self        = this;
     
     var releaseLock = function() {
