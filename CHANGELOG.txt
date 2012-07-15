@@ -1,0 +1,9 @@
+=== 0.1.1 / 2012-07-15
+
+* Fix an implicit global variable leak (missing semicolon)
+
+
+=== 0.1.0 / 2012-02-26
+
+* Initial release: Redis backend for Faye 0.8
+
