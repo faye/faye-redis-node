@@ -8,7 +8,8 @@ var Engine = function(server, options) {
       db     = this._options.database || this.DEFAULT_DATABASE,
       auth   = this._options.password,
       gc     = this._options.gc       || this.DEFAULT_GC,
-      socket = this._options.socket;
+      socket = this._options.socket,
+      errorHandler = this._options.errorHandler;
   
   this._ns  = this._options.namespace || '';
   
@@ -26,6 +27,15 @@ var Engine = function(server, options) {
   }
   this._redis.select(db);
   this._subscriber.select(db);
+  
+  if (errorHandler) {
+    this._redis.on("error", function(err) {
+      errorHandler(err);
+    });
+    this._subscriber.on("error", function(err) {
+      errorHandler(err);
+    });
+  }
   
   var self = this;
   this._subscriber.subscribe(this._ns + '/notifications');
