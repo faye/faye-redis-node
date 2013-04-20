@@ -158,6 +158,7 @@ Engine.prototype = {
         self  = this;
 
     multi.lrange(key, 0, -1, function(error, jsonMessages) {
+      if (!jsonMessages) return;
       var messages = jsonMessages.map(function(json) { return JSON.parse(json) });
       self._server.deliver(clientId, messages);
     });
