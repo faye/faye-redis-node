@@ -1,3 +1,8 @@
+=== 0.1.2 / 2013-04-28
+
+* Improve garbage collection to avoid leaking Redis memory
+
+
 === 0.1.1 / 2012-07-15
 
 * Fix an implicit global variable leak (missing semicolon)
