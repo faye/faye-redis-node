@@ -69,7 +69,7 @@ Engine.prototype = {
     var cutoff = new Date().getTime() - (1000 * 1.6 * this._server.timeout);
 
     this._redis.zscore(this._ns + '/clients', clientId, function(error, score) {
-      callback.call(context, score > cutoff);
+      callback.call(context, parseInt(score, 10) > cutoff);
     });
   },
 
