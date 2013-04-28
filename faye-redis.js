@@ -66,22 +66,26 @@ Engine.prototype = {
   },
 
   clientExists: function(clientId, callback, context) {
+    var cutoff = new Date().getTime() - (1000 * 1.6 * this._server.timeout);
+
     this._redis.zscore(this._ns + '/clients', clientId, function(error, score) {
-      callback.call(context, score !== null);
+      callback.call(context, score > cutoff);
     });
   },
 
   destroyClient: function(clientId, callback, context) {
     var self = this;
 
-    this._redis.smembers(this._ns + '/clients/' + clientId + '/channels', function(error, channels) {
-      var n = channels.length, i = 0;
-      if (i === n) return self._afterSubscriptionsRemoved(clientId, callback, context);
+    this._redis.zadd(this._ns + '/clients', 0, clientId, function() {
+      self._redis.smembers(self._ns + '/clients/' + clientId + '/channels', function(error, channels) {
+        var n = channels.length, i = 0;
+        if (i === n) return self._afterSubscriptionsRemoved(clientId, callback, context);
 
-      channels.forEach(function(channel) {
-        self.unsubscribe(clientId, channel, function() {
-          i += 1;
-          if (i === n) self._afterSubscriptionsRemoved(clientId, callback, context);
+        channels.forEach(function(channel) {
+          self.unsubscribe(clientId, channel, function() {
+            i += 1;
+            if (i === n) self._afterSubscriptionsRemoved(clientId, callback, context);
+          });
         });
       });
     });
@@ -142,6 +146,9 @@ Engine.prototype = {
         self._server.debug('Queueing for client ?: ?', clientId, message);
         self._redis.rpush(self._ns + '/clients/' + clientId + '/messages', jsonMessage);
         self._redis.publish(self._ns + '/notifications', clientId);
+        self.clientExists(clientId, function(exists) {
+          if (!exists) this._redis.del(self._ns + '/clients/' + clientId + '/messages');
+        });
       });
     };
     keys.push(notify);
