@@ -143,11 +143,14 @@ Engine.prototype = {
 
     var notify = function(error, clients) {
       clients.forEach(function(clientId) {
+        var queue = self._ns + '/clients/' + clientId + '/messages';
+
         self._server.debug('Queueing for client ?: ?', clientId, message);
-        self._redis.rpush(self._ns + '/clients/' + clientId + '/messages', jsonMessage);
+        self._redis.rpush(queue, jsonMessage);
         self._redis.publish(self._ns + '/notifications', clientId);
+
         self.clientExists(clientId, function(exists) {
-          if (!exists) this._redis.del(self._ns + '/clients/' + clientId + '/messages');
+          if (!exists) this._redis.del(queue);
         });
       });
     };
