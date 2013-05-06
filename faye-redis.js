@@ -150,7 +150,7 @@ Engine.prototype = {
         self._redis.publish(self._ns + '/notifications', clientId);
 
         self.clientExists(clientId, function(exists) {
-          if (!exists) this._redis.del(queue);
+          if (!exists) self._redis.del(queue);
         });
       });
     };
