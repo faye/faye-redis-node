@@ -2,7 +2,6 @@
 .gitignore
 .gitmodules
 .npmignore
-.redcar
 .travis.yml
 dump.rdb
 Rakefile
