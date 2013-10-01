@@ -27,10 +27,15 @@ var Engine = function(server, options) {
   this._redis.select(db);
   this._subscriber.select(db);
 
+  this._messageChannel = this._ns + '/notifications/messages';
+  this._closeChannel   = this._ns + '/notifications/close';
+
   var self = this;
-  this._subscriber.subscribe(this._ns + '/notifications');
+  this._subscriber.subscribe(this._messageChannel);
+  this._subscriber.subscribe(this._closeChannel);
   this._subscriber.on('message', function(topic, message) {
-    self.emptyQueue(message);
+    if (topic === self._messageChannel) self.emptyQueue(message);
+    if (topic === self._closeChannel)   self._server.trigger('close', message);
   });
 
   this._gc = setInterval(function() { self.gc() }, gc * 1000);
@@ -97,6 +102,7 @@ Engine.prototype = {
       self._redis.zrem(self._ns + '/clients', clientId, function() {
         self._server.debug('Destroyed client ?', clientId);
         self._server.trigger('disconnect', clientId);
+        self._redis.publish(self._closeChannel, clientId);
         if (callback) callback.call(context);
       });
     });
@@ -147,7 +153,7 @@ Engine.prototype = {
 
         self._server.debug('Queueing for client ?: ?', clientId, message);
         self._redis.rpush(queue, jsonMessage);
-        self._redis.publish(self._ns + '/notifications', clientId);
+        self._redis.publish(self._messageChannel, clientId);
 
         self.clientExists(clientId, function(exists) {
           if (!exists) self._redis.del(queue);
