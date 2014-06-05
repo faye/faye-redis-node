@@ -81,28 +81,29 @@ Engine.prototype = {
   destroyClient: function(clientId, callback, context) {
     var self = this;
 
-    this._redis.zadd(this._ns + '/clients', 0, clientId, function() {
-      self._redis.smembers(self._ns + '/clients/' + clientId + '/channels', function(error, channels) {
-        var n = channels.length, i = 0;
-        if (i === n) return self._afterSubscriptionsRemoved(clientId, callback, context);
+    this._redis.smembers(this._ns + '/clients/' + clientId + '/channels', function(error, channels) {
+      var multi = self._redis.multi();
 
-        channels.forEach(function(channel) {
-          self.unsubscribe(clientId, channel, function() {
-            i += 1;
-            if (i === n) self._afterSubscriptionsRemoved(clientId, callback, context);
-          });
-        });
+      multi.zadd(self._ns + '/clients', 0, clientId);
+
+      channels.forEach(function(channel) {
+        multi.srem(self._ns + '/clients/' + clientId + '/channels', channel);
+        multi.srem(self._ns + '/channels' + channel, clientId);
       });
-    });
-  },
+      multi.del(self._ns + '/clients/' + clientId + '/messages');
+      multi.zrem(self._ns + '/clients', clientId);
+      multi.publish(self._closeChannel, clientId);
 
-  _afterSubscriptionsRemoved: function(clientId, callback, context) {
-    var self = this;
-    this._redis.del(this._ns + '/clients/' + clientId + '/messages', function() {
-      self._redis.zrem(self._ns + '/clients', clientId, function() {
+      multi.exec(function(error, results) {
+        channels.forEach(function(channel, i) {
+          if (results[2 * i + 1] !== 1) return;
+          self._server.trigger('unsubscribe', clientId, channel);
+          self._server.debug('Unsubscribed client ? from channel ?', clientId, channel);
+        });
+
         self._server.debug('Destroyed client ?', clientId);
         self._server.trigger('disconnect', clientId);
-        self._redis.publish(self._closeChannel, clientId);
+
         if (callback) callback.call(context);
       });
     });
