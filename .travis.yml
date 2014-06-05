@@ -10,4 +10,3 @@ before_script:
   - make
 
 env: TRAVIS=1
-

@@ -5,4 +5,3 @@ require('../vendor/faye/spec/javascript/engine_spec')
 require('./faye_redis_spec')
 
 JS.Test.autorun()
-
