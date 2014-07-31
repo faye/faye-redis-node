@@ -21,4 +21,3 @@
 ### 0.1.0 / 2012-02-26
 
 * Initial release: Redis backend for Faye 0.8
-
