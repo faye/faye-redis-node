@@ -11,3 +11,5 @@ before_script:
 
 env: TRAVIS=1
 
+services:
+  - redis-server
