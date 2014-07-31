@@ -28,7 +28,7 @@ JS.Test.describe("Redis engine", function() { with(this) {
       var client = redis.createClient(6379, 'localhost', {no_ready_check: true})
       var subscriberClient = redis.createClient(6379, 'localhost', {no_ready_check: true})
 
-      if(process.env.TRAVIS) {
+      if(!process.env.TRAVIS) {
         client.auth("foobared")
         subscriberClient.auth("foobared")
       }
