@@ -1,4 +1,4 @@
-# faye-redis [![Build Status](https://secure.travis-ci.org/faye/faye-redis-node.png)](http://travis-ci.org/faye/faye-redis-node)
+# faye-redis [![Build Status](https://secure.travis-ci.org/faye/faye-redis-node.svg)](http://travis-ci.org/faye/faye-redis-node)
 
 This plugin provides a Redis-based backend for the
 [Faye](http://faye.jcoglan.com) messaging server. It allows a single Faye
