@@ -9,6 +9,9 @@ node_js:
 services:
   - redis-server
 
+before_install:
+  - for v in 0.6 0.8 ; do test $TRAVIS_NODE_VERSION = "$v" && npm install -g npm@1.2.8000 || true ; done
+
 before_script:
   - make
 
