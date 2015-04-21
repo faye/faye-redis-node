@@ -52,6 +52,26 @@ Engine.prototype = {
   DEFAULT_GC:       60,
   LOCK_TIMEOUT:     120,
 
+  _key: function(key) {
+    return this._ns + key;
+  },
+
+  _clientsKey: function() {
+    return this._key('/clients');
+  },
+
+  _clientChannelsKey: function(clientId) {
+    return this._key('/clients/' + clientId + '/channels');
+  },
+
+  _clientMessagesKey: function(clientId) {
+    return this._key('/clients/' + clientId + '/messages');
+  },
+
+  _channelKey: function(channel) {
+    return this._key('/channels' + channel);
+  },
+
   disconnect: function() {
     this._redis.end();
     this._subscriber.unsubscribe();
@@ -61,7 +81,7 @@ Engine.prototype = {
 
   createClient: function(callback, context) {
     var clientId = this._server.generateId(), self = this;
-    this._redis.zadd(this._ns + '/clients', 0, clientId, function(error, added) {
+    this._redis.zadd(this._clientsKey(), 0, clientId, function(error, added) {
       if (added === 0) return self.createClient(callback, context);
       self._server.debug('Created new client ?', clientId);
       self.ping(clientId);
@@ -73,7 +93,7 @@ Engine.prototype = {
   clientExists: function(clientId, callback, context) {
     var cutoff = new Date().getTime() - (1000 * 1.6 * this._server.timeout);
 
-    this._redis.zscore(this._ns + '/clients', clientId, function(error, score) {
+    this._redis.zscore(this._clientsKey(), clientId, function(error, score) {
       callback.call(context, parseInt(score, 10) > cutoff);
     });
   },
@@ -81,17 +101,17 @@ Engine.prototype = {
   destroyClient: function(clientId, callback, context) {
     var self = this;
 
-    this._redis.smembers(this._ns + '/clients/' + clientId + '/channels', function(error, channels) {
+    this._redis.smembers(this._clientChannelsKey(clientId), function(error, channels) {
       var multi = self._redis.multi();
 
-      multi.zadd(self._ns + '/clients', 0, clientId);
+      multi.zadd(self._clientsKey(), 0, clientId);
 
       channels.forEach(function(channel) {
-        multi.srem(self._ns + '/clients/' + clientId + '/channels', channel);
-        multi.srem(self._ns + '/channels' + channel, clientId);
+        multi.srem(self._clientChannelsKey(clientId), channel);
+        multi.srem(self._channelKey(channel), clientId);
       });
-      multi.del(self._ns + '/clients/' + clientId + '/messages');
-      multi.zrem(self._ns + '/clients', clientId);
+      multi.del(self._clientMessagesKey(clientId));
+      multi.zrem(self._clientsKey(), clientId);
       multi.publish(self._closeChannel, clientId);
 
       multi.exec(function(error, results) {
@@ -116,15 +136,15 @@ Engine.prototype = {
     var time = new Date().getTime();
 
     this._server.debug('Ping ?, ?', clientId, time);
-    this._redis.zadd(this._ns + '/clients', time, clientId);
+    this._redis.zadd(this._clientsKey(), time, clientId);
   },
 
   subscribe: function(clientId, channel, callback, context) {
     var self = this;
-    this._redis.sadd(this._ns + '/clients/' + clientId + '/channels', channel, function(error, added) {
+    this._redis.sadd(this._clientChannelsKey(clientId), channel, function(error, added) {
       if (added === 1) self._server.trigger('subscribe', clientId, channel);
     });
-    this._redis.sadd(this._ns + '/channels' + channel, clientId, function() {
+    this._redis.sadd(this._channelKey(channel), clientId, function() {
       self._server.debug('Subscribed client ? to channel ?', clientId, channel);
       if (callback) callback.call(context);
     });
@@ -132,10 +152,10 @@ Engine.prototype = {
 
   unsubscribe: function(clientId, channel, callback, context) {
     var self = this;
-    this._redis.srem(this._ns + '/clients/' + clientId + '/channels', channel, function(error, removed) {
+    this._redis.srem(this._clientChannelsKey(clientId), channel, function(error, removed) {
       if (removed === 1) self._server.trigger('unsubscribe', clientId, channel);
     });
-    this._redis.srem(this._ns + '/channels' + channel, clientId, function() {
+    this._redis.srem(this._channelKey(channel), clientId, function() {
       self._server.debug('Unsubscribed client ? from channel ?', clientId, channel);
       if (callback) callback.call(context);
     });
@@ -146,11 +166,11 @@ Engine.prototype = {
 
     var self        = this,
         jsonMessage = JSON.stringify(message),
-        keys        = channels.map(function(c) { return self._ns + '/channels' + c });
+        keys        = channels.map(function(c) { return self._channelKey(c) });
 
     var notify = function(error, clients) {
       clients.forEach(function(clientId) {
-        var queue = self._ns + '/clients/' + clientId + '/messages';
+        var queue = self._clientMessagesKey(clientId);
 
         self._server.debug('Queueing for client ?: ?', clientId, message);
         self._redis.rpush(queue, jsonMessage);
@@ -170,7 +190,7 @@ Engine.prototype = {
   emptyQueue: function(clientId) {
     if (!this._server.hasConnection(clientId)) return;
 
-    var key   = this._ns + '/clients/' + clientId + '/messages',
+    var key   = this._clientMessagesKey(clientId),
         multi = this._redis.multi(),
         self  = this;
 
@@ -191,7 +211,7 @@ Engine.prototype = {
       var cutoff = new Date().getTime() - 1000 * 2 * timeout,
           self   = this;
 
-      this._redis.zrangebyscore(this._ns + '/clients', 0, cutoff, function(error, clients) {
+      this._redis.zrangebyscore(this._clientsKey(), 0, cutoff, function(error, clients) {
         var i = 0, n = clients.length;
         if (i === n) return releaseLock();
 
@@ -206,7 +226,7 @@ Engine.prototype = {
   },
 
   _withLock: function(lockName, callback, context) {
-    var lockKey     = this._ns + '/locks/' + lockName,
+    var lockKey     = this._key('/locks/' + lockName),
         currentTime = new Date().getTime(),
         expiry      = currentTime + this.LOCK_TIMEOUT * 1000 + 1,
         self        = this;
