@@ -1,21 +1,30 @@
-{ "name"            : "faye-redis"
-, "description"     : "Redis backend engine for Faye"
-, "homepage"        : "http://github.com/faye/faye-redis-node"
-, "author"          : "James Coglan <jcoglan@gmail.com> (http://jcoglan.com/)"
-, "keywords"        : ["pubsub", "bayeux"]
-, "license"         : "MIT"
-
-, "version"         : "0.2.0"
-, "engines"         : {"node": ">=0.4.0"}
-, "main"            : "./faye-redis"
-, "dependencies"    : {"redis": ""}
-, "devDependencies" : {"jstest": ""}
-
-, "scripts"         : {"test": "node spec/runner.js"}
-
-, "bugs"            : "http://github.com/faye/faye-redis-node/issues"
-
-, "repository"      : { "type"  : "git"
-                      , "url"   : "git://github.com/faye/faye-redis-node.git"
-                      }
+{
+  "name": "faye-redis",
+  "description": "Redis backend engine for Faye",
+  "homepage": "http://github.com/faye/faye-redis-node",
+  "author": "James Coglan <jcoglan@gmail.com> (http://jcoglan.com/)",
+  "keywords": [
+    "pubsub",
+    "bayeux"
+  ],
+  "license": "MIT",
+  "version": "0.3.0",
+  "engines": {
+    "node": ">=0.4.0"
+  },
+  "main": "./faye-redis",
+  "dependencies": {
+    "redis": ""
+  },
+  "devDependencies": {
+    "jstest": ""
+  },
+  "scripts": {
+    "test": "node spec/runner.js"
+  },
+  "bugs": "http://github.com/faye/faye-redis-node/issues",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/faye/faye-redis-node.git"
+  }
 }

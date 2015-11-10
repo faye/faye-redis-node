@@ -8,24 +8,37 @@ var Engine = function(server, options) {
       db     = this._options.database || this.DEFAULT_DATABASE,
       auth   = this._options.password,
       gc     = this._options.gc       || this.DEFAULT_GC,
+      client = this._options.client,
+      subscriberClient = this._options.subscriberClient,
       socket = this._options.socket;
 
   this._ns  = this._options.namespace || '';
 
-  if (socket) {
-    this._redis = redis.createClient(socket, {no_ready_check: true});
-    this._subscriber = redis.createClient(socket, {no_ready_check: true});
+  if (client) {
+    this._redis = client;
   } else {
-    this._redis = redis.createClient(port, host, {no_ready_check: true});
-    this._subscriber = redis.createClient(port, host, {no_ready_check: true});
+    this._redis = socket ?
+                    redis.createClient(socket, {no_ready_check: true}) :
+                    redis.createClient(port, host, {no_ready_check: true});
+
+    if (auth) {
+      this._redis.auth(auth);
+    }
+    this._redis.select(db);
   }
 
-  if (auth) {
-    this._redis.auth(auth);
-    this._subscriber.auth(auth);
+  if (subscriberClient) {
+    this._subscriber = subscriberClient;
+  } else {
+    this._subscriber = socket ?
+                        redis.createClient(socket, {no_ready_check: true}) :
+                        redis.createClient(port, host, {no_ready_check: true});
+
+    if (auth) {
+      this._subscriber.auth(auth);
+    }
+    this._subscriber.select(db);
   }
-  this._redis.select(db);
-  this._subscriber.select(db);
 
   this._messageChannel = this._ns + '/notifications/messages';
   this._closeChannel   = this._ns + '/notifications/close';
