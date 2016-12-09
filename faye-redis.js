@@ -8,13 +8,18 @@ var Engine = function(server, options) {
       db     = this._options.database || this.DEFAULT_DATABASE,
       auth   = this._options.password,
       gc     = this._options.gc       || this.DEFAULT_GC,
-      socket = this._options.socket;
+      socket = this._options.socket,
+      redisClient = this._options.redisClient,
+      subscriberClient = this._options.subscriberClient;
 
   this._ns  = this._options.namespace || '';
 
   if (socket) {
     this._redis = redis.createClient(socket, {no_ready_check: true});
     this._subscriber = redis.createClient(socket, {no_ready_check: true});
+  } else if (redisClient && subscriberClient) {
+    this._redis = redisClient;
+    this._subscriber = subscriberClient;
   } else {
     this._redis = redis.createClient(port, host, {no_ready_check: true});
     this._subscriber = redis.createClient(port, host, {no_ready_check: true});
