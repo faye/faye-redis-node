@@ -15,6 +15,9 @@ var Engine = function(server, options) {
   if (socket) {
     this._redis = redis.createClient(socket, {no_ready_check: true});
     this._subscriber = redis.createClient(socket, {no_ready_check: true});
+  } else if(options.client) {
+    this._redis = options.client;
+    this._subscriber = options.subscriberClient || options.client;
   } else {
     this._redis = redis.createClient(port, host, {no_ready_check: true});
     this._subscriber = redis.createClient(port, host, {no_ready_check: true});
