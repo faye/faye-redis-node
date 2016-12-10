@@ -122,22 +122,22 @@ Engine.prototype = {
   subscribe: function(clientId, channel, callback, context) {
     var self = this;
     this._redis.sadd(this._ns + '/clients/' + clientId + '/channels', channel, function(error, added) {
-      if (added === 1) self._server.trigger('subscribe', clientId, channel);
-    });
-    this._redis.sadd(this._ns + '/channels' + channel, clientId, function() {
-      self._server.debug('Subscribed client ? to channel ?', clientId, channel);
-      if (callback) callback.call(context);
+      self._redis.sadd(self._ns + '/channels' + channel, clientId, function() {
+        self._server.debug('Subscribed client ? to channel ?', clientId, channel);
+        if (added === 1) self._server.trigger('subscribe', clientId, channel);
+        if (callback) callback.call(context);
+      });
     });
   },
 
   unsubscribe: function(clientId, channel, callback, context) {
     var self = this;
     this._redis.srem(this._ns + '/clients/' + clientId + '/channels', channel, function(error, removed) {
-      if (removed === 1) self._server.trigger('unsubscribe', clientId, channel);
-    });
-    this._redis.srem(this._ns + '/channels' + channel, clientId, function() {
-      self._server.debug('Unsubscribed client ? from channel ?', clientId, channel);
-      if (callback) callback.call(context);
+      self._redis.srem(self._ns + '/channels' + channel, clientId, function() {
+        self._server.debug('Unsubscribed client ? from channel ?', clientId, channel);
+        if (removed === 1) self._server.trigger('unsubscribe', clientId, channel);
+        if (callback) callback.call(context);
+      });
     });
   },
 
