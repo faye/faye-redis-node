@@ -8,7 +8,7 @@
 , "version"         : "0.2.0"
 , "engines"         : {"node": ">=0.4.0"}
 , "main"            : "./faye-redis"
-, "dependencies"    : {"redis": ""}
+, "dependencies"    : {"redis": "<4.0.0"}
 , "devDependencies" : {"jstest": ""}
 
 , "scripts"         : {"test": "node spec/runner.js"}
